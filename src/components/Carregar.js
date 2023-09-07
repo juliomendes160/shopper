@@ -1,48 +1,46 @@
 import React from 'react';
-// import axios from 'axios';
+import axios from 'axios';
 
 function Carregar() {
 
-    var file = null;
+    let file = null;
 
-    const handleFileChange = (event) =>{
-        file =  document.getElementById("fileInput").files[0]
-        console.log(file);
+    const handleFileChange = (event) => {
+        file = document.getElementById("fileInput").files[0]
     }
 
     const handleSubmit = async (event) => {
         event.preventDefault();
 
-        if(!file) return alert('Por favor, selecione um arquivo antes de enviar.');
+        if (!file){
+            alert('Por favor, selecione um arquivo antes de enviar.');
+            return
+        }
 
-        // try {
-        //     const formData = new FormData();
-        //     formData.append('file', selectedFile);
-      
-        //     // Faça a solicitação POST para o servidor Node.js
-        //     const response = await axios.post('http://seu-servidor:porta/upload', formData, {
-        //       headers: {
-        //         'Content-Type': 'multipart/form-data', // Certifique-se de definir o tipo de conteúdo correto
-        //       },
-        //     });
-      
-        //     console.log(response.data); // Exiba a resposta do servidor no console
-      
-        //     // Lide com a resposta do servidor, se necessário
-      
-        //   } catch (error) {
-        //     console.error('Erro ao enviar o arquivo:', error);
-        //     // Lide com erros, se necessário
-        //   }
+        try {
+            const formData = new FormData();
+            formData.append('file', file);
+
+            const response = await axios.post('http://localhost:3001/upload', formData, {
+                headers: {
+                    'Content-Type': 'multipart/form-data',
+                },
+            });
+
+            console.log(response.data);
+        }
+        catch (error) {
+            console.error('Erro ao enviar o arquivo:', error);
+        }
     };
-    
+
     return (
         <>
             <form onSubmit={handleSubmit}>
                 <h1>Formulário de Envio de Arquivo</h1>
                 <div>
                     <label htmlFor="fileInput"></label>
-                    <input type="file" id="fileInput" onChange={handleFileChange}/>
+                    <input type="file" id="fileInput" onChange={handleFileChange} />
                 </div>
                 <button type="submit">VALIDAR</button>
             </form>
