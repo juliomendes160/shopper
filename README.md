@@ -1,4 +1,5 @@
-# Instalação do MySQL
+# MySQL
+## Instalação
 
 **Siga estas etapas para instalar o MySQL:**
 
@@ -12,7 +13,7 @@
 
 5. Após a conclusão da instalação, o MySQL estará pronto para uso.
 
-# Criando uma conexão do MySQL
+## Conexão
 
 **Siga estas etapas para criar uma conexão do MySQL:**
 
@@ -24,7 +25,7 @@
 
 4. Clique no botão OK
 
-# Importar dados do arquivo database.sql
+## Importação
 
 **Siga estas etapas para importar os dados do arquivo database.sql:**
 
@@ -37,6 +38,8 @@
 4. Clique no nome "Schemas" que está do lado direito do nome "Administration"
 
 5. Clique no ícone de com duas setas que simboliza o ícone de atualização
+
+
 
 # Getting Started with Create React App
 

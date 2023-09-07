@@ -1,18 +1,39 @@
 import React from 'react';
+// import axios from 'axios';
 
 function Carregar() {
 
-    const handleFileChange = (event) => {
-        
-    };
+    var file = null;
 
-    const handleSubmit = (event) => {
+    const handleFileChange = (event) =>{
+        file =  document.getElementById("fileInput").files[0]
+        console.log(file);
+    }
+
+    const handleSubmit = async (event) => {
         event.preventDefault();
-        if(document.getElementById('fileInput').files[0]){
-            
-        }else{
-            alert('Por favor, selecione um arquivo antes de enviar.');
-        }
+
+        if(!file) return alert('Por favor, selecione um arquivo antes de enviar.');
+
+        // try {
+        //     const formData = new FormData();
+        //     formData.append('file', selectedFile);
+      
+        //     // Faça a solicitação POST para o servidor Node.js
+        //     const response = await axios.post('http://seu-servidor:porta/upload', formData, {
+        //       headers: {
+        //         'Content-Type': 'multipart/form-data', // Certifique-se de definir o tipo de conteúdo correto
+        //       },
+        //     });
+      
+        //     console.log(response.data); // Exiba a resposta do servidor no console
+      
+        //     // Lide com a resposta do servidor, se necessário
+      
+        //   } catch (error) {
+        //     console.error('Erro ao enviar o arquivo:', error);
+        //     // Lide com erros, se necessário
+        //   }
     };
     
     return (
