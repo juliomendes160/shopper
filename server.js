@@ -1,7 +1,7 @@
 const express = require('express');
 const cors = require('cors');
+const mysql = require('mysql2');
 const multer = require('multer')
-const mysql = require('mysql');
 const fs = require('fs');
 const csv = require('csv-parser');
 const app = express();
@@ -25,6 +25,7 @@ connection.connect((err) => {
   console.log('Conectado ao banco de dados MySQL.');
 });
 
+
 const storage = multer.diskStorage({
   destination: (req, file, cb) => {
     cb(null, 'uploads/');
@@ -41,40 +42,62 @@ app.get('/', (req, res) => {
   res.send('Servidor Node.js funcionando!');
 });
 
-app.post('/upload', upload.single('file'), (req, res) => {
+app.post('/upload', upload.single('file'), async (req, res) => {
+  let objeto = {};
+  let array = [];
 
-  const stream = fs.createReadStream(req.file.path);
-  let message = "";
-  let verificar = true;
+  fs.readFile(req.file.path, 'utf8', (err, data) => {
+    const linhas = data.split('\n');
 
-  stream.pipe(csv())
-  .on('data', (row) => {
-    const campos1 = ['product_code', 'new_price'];
-    const campos2 = Object.keys(row);
+    linhas.forEach(async (linha, index) => {
 
-    if(verificar){
-      const campos = campos1.length === campos2.length && campos1.every((value, index) => value === campos2[index]);
-      if(campos){
-        verificar = false;
-      }else{
-        stream.unpipe();
-        res.json({ message: 'Informe todos os campos necessários: product_code, new_price!' });
+      const colunas = linha.split(',');
+
+      if (index != 0) {
+
+        if ((linhas[0].split(',')[0] != 'product_code') && (linhas[0].split(',')[1] != 'new_price')) {
+          objeto.r1 = false;
+        } else {
+          objeto.r1 = true;
+        }
+
+        const sql = 'SELECT COUNT(*) AS count FROM products WHERE code = ?';
+
+        const resultados = await Promise.all(
+          linhas.slice(1).map(async (linha) => {
+            const colunas = linha.split(',');
+            const rowCount = await new Promise((resolve, reject) => {
+              connection.query(sql, colunas[0], (err, results) => {
+                if (err) {
+                  console.error('Erro ao executar a consulta:', err);
+                  reject(err);
+                  return;
+                }
+                resolve(results[0].count);
+              });
+            });
+            return rowCount;
+          })
+        );
+        
+        objeto.r2 = resultados;
+       
+        const decimal = /^[0-9]+\.[0-9]{2}/;
+        if (!decimal.test(colunas[1])) {
+          objeto.r3 = false;
+        } else {
+          objeto.r3 = true;
+        }
+
+        array.push(objeto);
+
+        if (linhas.length - 1 == index) {
+          console.log(array);
+          res.json(array);
+        }
       }
-    }
-
-
-
-    console.log('Código Produto:', row['product_code'], 'Preço Novo:', row['new_price']);
-  })
-  .on('end', () => {
-    res.json({ message: 'Leitura do arquivo concluída.' });
-  })
-  .on('error', (error) => {
-    message = 'Erro ao ler o arquivo:';
-    console.error(message, error);
+    });
   });
-
-  
 });
 
 app.listen(port, () => {
